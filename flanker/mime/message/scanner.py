@@ -32,12 +32,8 @@ def scan(string):
     tokens = tokenize(string)
     if not tokens:
         tokens = [default_content_type()]
-    try:
-        return traverse(Start(), TokensIterator(tokens, string))
-    except DecodingError:
-        raise
-    except Exception as cause:
-        raise six.raise_from(DecodingError("Malformed MIME message"), cause)
+
+    return traverse(Start(), TokensIterator(tokens, string))
 
 
 def traverse(pointer, iterator, parent=None, allow_bad_mime=False):
