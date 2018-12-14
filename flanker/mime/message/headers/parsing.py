@@ -57,8 +57,12 @@ def is_empty(line):
 def _read_header_lines(fp):
     """Read lines with headers until the start of body"""
     lines = deque()
-    for line in fp:
+    while True:
+        line = fp.readline()
         if is_empty(line):
+            break
+
+        if not line:
             break
 
         # tricky case if it's not a header and not an empty line
