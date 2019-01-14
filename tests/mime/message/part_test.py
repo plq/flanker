@@ -243,7 +243,7 @@ def parse_then_serialize_malformed_message_test():
     eq_(OUTLOOK_EXPRESS, serialized)
 
 
-# Make sure that ascii uprades to quoted-printable whenever needed.
+# Make sure that ascii upgrades to quoted-printable whenever needed.
 def ascii_to_quoted_printable_test():
     # contains unicode chars
     message = scan(TEXT_ONLY)
