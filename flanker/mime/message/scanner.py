@@ -3,6 +3,7 @@ from logging import getLogger
 
 import regex as re
 import six
+from mmap import mmap
 
 from flanker.mime.message.errors import DecodingError
 from flanker.mime.message.headers import parsing, is_empty, ContentType
@@ -16,7 +17,8 @@ def scan(string):
     build a message tree"""
 
     if six.PY2:
-        if not isinstance(string, six.binary_type):
+        if not isinstance(string, six.binary_type) \
+                                               and not isinstance(string, mmap):
             raise DecodingError('Scanner works with binary only')
     else:
         if isinstance(string, six.binary_type):
@@ -250,7 +252,11 @@ class TokensIterator(object):
         self.position = -1
         self.tokens = tokens
         self.string = string
-        self.stream = six.StringIO(string)
+        if isinstance(string, mmap):
+            self.stream = string
+        else:
+            self.stream = six.BytesIO(string)
+
         self.opcount = 0
 
     def next(self):
