@@ -31,6 +31,22 @@ def scan(string):
     return traverse(Start(), TokensIterator(tokens, string))
 
 
+def _traverse_single_part(pointer, iterator, parent, token, badmime=False):
+    while True:
+        iterator.check()
+        end = iterator.next()
+        if not end.is_content_type():
+            break
+
+    return make_part(
+        content_type=token,
+        start=pointer,
+        end=end,
+        iterator=iterator,
+        parent=parent,
+        badmime=badmime)
+
+
 def traverse(pointer, iterator, parent=None, allow_bad_mime=False):
     """Recursive-descendant parser"""
 
@@ -53,19 +69,7 @@ def traverse(pointer, iterator, parent=None, allow_bad_mime=False):
     # so we should ignore all other content-type headers
     # until the boundary or the end of message
     if token.is_singlepart():
-
-        while True:
-            iterator.check()
-            end = iterator.next()
-            if not end.is_content_type():
-                break
-
-        return make_part(
-            content_type=token,
-            start=pointer,
-            end=end,
-            iterator=iterator,
-            parent=parent)
+        return _traverse_single_part(pointer, iterator, parent, token)
 
     # good old multipart message
     # here goes the real recursion
@@ -77,8 +81,8 @@ def traverse(pointer, iterator, parent=None, allow_bad_mime=False):
         # some boundary, how could we parse it otherwise?
         boundary = content_type.get_boundary()
         if not boundary:
-            raise DecodingError(
-                "Multipart message without boundary")
+            return _traverse_single_part(pointer, iterator, parent, token,
+                                                                   badmime=True)
 
         parts = deque()
         token = iterator.next()
@@ -188,8 +192,8 @@ def default_content_type():
     return ContentType("text", "plain", {'charset': 'ascii'})
 
 
-def make_part(content_type, start, end, iterator, parts=[], enclosed=None,
-              parent=None):
+def make_part(content_type, start, end, iterator, parts=(), enclosed=None,
+                                                    parent=None, badmime=False):
 
     # here we detect where the message really starts
     # the exact position in the string, at the end of the
@@ -219,6 +223,9 @@ def make_part(content_type, start, end, iterator, parts=[], enclosed=None,
     if parent and (parent.is_message_container() or parent.is_headers_container()):
         start = locate_first_newline(iterator.stream, start)
 
+    if badmime:
+        content_type = ContentType('application', 'octet-stream')
+
     # ok, finally, create the MimePart.
     # note that it does not parse anything, just remembers
     # the position in the string
@@ -229,6 +236,7 @@ def make_part(content_type, start, end, iterator, parts=[], enclosed=None,
             end=end,
             stream=iterator.stream,
             string=iterator.string),
+        badmime=badmime,
         parts=parts,
         enclosed=enclosed,
         is_root=(parent==None))

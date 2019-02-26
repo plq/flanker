@@ -385,11 +385,13 @@ class RichPartMixin(object):
 
 class MimePart(RichPartMixin):
 
-    def __init__(self, container, parts=None, enclosed=None, is_root=False):
+    def __init__(self, container, badmime=False,
+                                      parts=None, enclosed=None, is_root=False):
         RichPartMixin.__init__(self, is_root)
         self._container = container
         self.parts = parts or []
         self.enclosed = enclosed
+        self.badmime = badmime
 
     @property
     def size(self):
