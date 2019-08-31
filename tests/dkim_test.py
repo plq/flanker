@@ -15,7 +15,7 @@ From: Joe SixPack <joe@football.example.com>
 To: Suzie Q <suzie@shopping.example.net>
 Subject: Is dinner ready?
 Date: Fri, 11 Jul 2003 21:00:37 -0700 (PDT)
-Message-ID: <20030712040037.46341.5F8J@football.example.com>
+Message-Id: <20030712040037.46341.5F8J@football.example.com>
 
 Hi.
 
@@ -49,7 +49,7 @@ def test_simple_domain_key_signature():
     assert_equal(
         sig,
         b"DomainKey-Signature: a=rsa-sha1; c=nofws; d=testing1; s=mx; q=dns;\r"
-        b"\n h=From: To: Subject: Date: Message-ID;\r\n b=NDj4joHi27ePRug/aCgy"
+        b"\n h=From: To: Subject: Date: Message-Id;\r\n b=NDj4joHi27ePRug/aCgy"
         b"wVFaAzxkcWP+F9r5J/gj7SHd1dFB3YfyZIYmnc+xo/HTN425sj\r\n njfKMRjSLNugH"
         b"i2SN1doNsdHigD7hnXwzoRVaZQ15zWNcQwaHriaTyijV+PUHEeU/EdNSakv\r\n XDoo"
         b"7lzEjzaYxBDx2PP25abuTSJF0=\r\n"
@@ -62,7 +62,7 @@ def test_simple_dkim_signature():
     assert_equal(
         sig,
         b"DKIM-Signature: a=rsa-sha256; v=1; c=simple/simple; d=testing1; q=dn"
-        b"s/txt; s=mx;\r\n t=1404859754; h=From: To: Subject: Date: Message-ID"
+        b"s/txt; s=mx;\r\n t=1404859754; h=From: To: Subject: Date: Message-Id"
         b";\r\n bh=4bLNXImK9drULnmePzZNEBleUanJCX5PIsDIFoH4KTQ=; b=IrtWacnHcpq"
         b"elwoPBxtI9RY0qJ9ABdltZRJcf5wXjXwA7sCbuxibMWk4m81m2zGqMOBsziIE\r\n 0j"
         b"Jxf4OJGbWVXwSB2mNPfPyScpqJEL+z43vhx+/ZTWBWpj3TSAuHmOT4G7wrySLAZmfDcm"
