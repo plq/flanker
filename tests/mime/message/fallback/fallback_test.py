@@ -1,7 +1,7 @@
 # coding:utf-8
 
 import email
-from cStringIO import StringIO
+from spyne.util.six import StringIO
 from contextlib import closing
 from email import message_from_string
 

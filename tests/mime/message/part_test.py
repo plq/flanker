@@ -1,7 +1,7 @@
 # coding:utf-8
 from email import message_from_string
 from contextlib import closing
-from cStringIO import StringIO
+from spyne.util.six import StringIO
 
 from nose.tools import eq_, ok_, assert_false, assert_raises, assert_less
 
