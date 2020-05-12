@@ -115,7 +115,6 @@ def test_uservoice_case():
     message._container._body_changed = True
     val = message.to_string()
     for line in val.splitlines():
-        print line
         ok_(len(line) < 200)
     message = scan(val)
     eq_(html, message.body)
