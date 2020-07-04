@@ -28,7 +28,9 @@ setup(name='flanker',
           'regex>=0.1.20110315',
           'six',
           'tld',
-          'WebOb>=0.9.8'],
+          'python-magic',
+          'WebOb>=0.9.8'
+      ],
       extras_require={
           'validator': [
               'dnsq>=1.1.6',

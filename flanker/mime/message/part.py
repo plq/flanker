@@ -1,3 +1,4 @@
+import magic
 import base64
 import email.encoders
 import imghdr
@@ -19,7 +20,7 @@ from flanker.mime.message.headers import (WithParams, ContentType, MessageId,
 from flanker.mime.message.headers.parametrized import fix_content_type
 from flanker.utils import is_pure_ascii
 
-log = logging.getLogger(__name__)
+logger = log = logging.getLogger(__name__)
 
 CTE = WithParams('7bit', {})
 
@@ -71,10 +72,16 @@ class Stream(object):
         if self._body is None:
             self._load_headers()
             self.stream.seek(self._body_start)
-            self._body = decode_body(
+            self._body, mime_type = decode_body(
                 self.content_type,
                 self.headers.get('Content-Transfer-Encoding', CTE).value,
                 self.stream.read(self.end - self._body_start + 1))
+
+            if mime_type.format_type != self.content_type.format_type:
+                logger.debug("Overridden mime type from '%s' to '%s'",
+                                                   self.content_type, mime_type)
+                self.content_type = mime_type
+
 
     def _set_body(self, value):
         if value != self._body:
@@ -579,7 +586,12 @@ def decode_transfer_encoding(encoding, body):
 
 def decode_charset(ctype, body):
     if ctype.main != 'text':
-        return body
+        return body, ctype
+
+    mime_type = magic.from_buffer(body, mime=True)
+    mime_type = ContentType(*mime_type.split("/", 1))
+    if mime_type.main != 'text':
+        return body, mime_type
 
     charset = ctype.get_charset()
     body = charsets.convert_to_unicode(charset, body)
@@ -591,7 +603,7 @@ def decode_charset(ctype, body):
         # Outlook bug
         body = body.replace(u'\xa0', u'&nbsp;')
 
-    return body
+    return body, ctype
 
 
 def encode_body(part):
