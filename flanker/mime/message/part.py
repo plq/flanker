@@ -77,9 +77,10 @@ class Stream(object):
                 self.headers.get('Content-Transfer-Encoding', CTE).value,
                 self.stream.read(self.end - self._body_start + 1))
 
-            if mime_type.format_type != self.content_type.format_type:
+            if mime_type.format_type != self.content_type.format_type \
+                                         and mime_type.format_type != 'message':
                 logger.debug("Overridden mime type from '%s' to '%s'",
-                                                   self.content_type, mime_type)
+                                               self.content_type, mime_type)
                 self.content_type = mime_type
 
 
@@ -572,7 +573,6 @@ def decode_body(content_type, content_encoding, body):
     # decode the transfer encoding
     body = decode_transfer_encoding(content_encoding, body)
 
-    # decode the charset next
     return decode_charset(content_type, body)
 
 
